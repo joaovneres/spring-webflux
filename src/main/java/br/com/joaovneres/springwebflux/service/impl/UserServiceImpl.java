@@ -5,9 +5,12 @@ import br.com.joaovneres.springwebflux.mapper.UserMapper;
 import br.com.joaovneres.springwebflux.model.request.UserRequest;
 import br.com.joaovneres.springwebflux.repository.impl.UserRepositoryImpl;
 import br.com.joaovneres.springwebflux.service.UserService;
+import br.com.joaovneres.springwebflux.service.exception.ObjectNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
+
+import static java.lang.String.format;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +26,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Mono<User> findById(String id) {
-        return userRepository.findById(id);
+        return userRepository.findById(id)
+                .switchIfEmpty(Mono.error(
+                        new ObjectNotFoundException(
+                                format("Object not found. Id: %s, type: %s", id, User.class.getSimpleName()))));
     }
 }

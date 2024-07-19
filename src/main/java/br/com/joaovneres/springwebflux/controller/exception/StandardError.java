@@ -1,4 +1,4 @@
-package br.com.joaovneres.springwebflux.controller.exceptions;
+package br.com.joaovneres.springwebflux.controller.exception;
 
 import lombok.Builder;
 import lombok.Data;
