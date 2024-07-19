@@ -1,7 +1,10 @@
 package br.com.joaovneres.springwebflux.controller;
 
+import br.com.joaovneres.springwebflux.model.request.UserRequest;
+import br.com.joaovneres.springwebflux.model.response.UserResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public interface UserController {
