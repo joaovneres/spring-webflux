@@ -1,6 +1,7 @@
 package br.com.joaovneres.springwebflux.controller.impl;
 
 import br.com.joaovneres.springwebflux.controller.UserController;
+import br.com.joaovneres.springwebflux.mapper.UserMapper;
 import br.com.joaovneres.springwebflux.model.request.UserRequest;
 import br.com.joaovneres.springwebflux.model.response.UserResponse;
 import br.com.joaovneres.springwebflux.service.impl.UserServiceImpl;
@@ -17,7 +18,8 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/users")
 public class UserControllerImpl implements UserController {
 
-   private final UserServiceImpl userService;
+    private final UserServiceImpl userService;
+    private final UserMapper mapper;
 
     @Override
     public ResponseEntity<Mono<Void>> save(UserRequest request) {
@@ -26,7 +28,9 @@ public class UserControllerImpl implements UserController {
 
     @Override
     public ResponseEntity<Mono<UserResponse>> findById(String id) {
-        return null;
+        return ResponseEntity.ok().body(
+                userService.findById(id).map(mapper::toResponse)
+        );
     }
 
     @Override

@@ -5,4 +5,6 @@ import reactor.core.publisher.Mono;
 
 public interface UserRepository {
     Mono<User> save(final User user);
+
+    Mono<User> findById(final String id);
 }
