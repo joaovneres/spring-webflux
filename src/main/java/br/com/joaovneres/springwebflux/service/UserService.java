@@ -13,4 +13,6 @@ public interface UserService {
     Flux<User> findAll();
 
     Mono<User> update(final String id, final UserRequest request);
+
+    Mono<User> delete(final String id);
 }
