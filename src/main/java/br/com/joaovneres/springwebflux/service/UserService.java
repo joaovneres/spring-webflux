@@ -11,4 +11,6 @@ public interface UserService {
     Mono<User> findById(String id);
 
     Flux<User> findAll();
+
+    Mono<User> update(final String id, final UserRequest request);
 }
