@@ -4,6 +4,7 @@ import br.com.joaovneres.springwebflux.entity.User;
 import br.com.joaovneres.springwebflux.mapper.UserMapper;
 import br.com.joaovneres.springwebflux.model.request.UserRequest;
 import br.com.joaovneres.springwebflux.repository.impl.UserRepositoryImpl;
+import br.com.joaovneres.springwebflux.service.exception.ObjectNotFoundException;
 import br.com.joaovneres.springwebflux.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +18,8 @@ import reactor.test.StepVerifier;
 
 import java.util.Objects;
 
+import static java.lang.String.format;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
@@ -116,5 +119,17 @@ class UserServiceTest {
                 .verify();
 
         Mockito.verify(userRepository, times(1)).findAndRemove(anyString());
+    }
+
+    @Test
+    public void testHandleNotFound() {
+        when(userRepository.findById(anyString())).thenReturn(Mono.empty());
+
+        try {
+            userService.findById("123").block();
+        } catch (Exception ex) {
+            assertEquals(ObjectNotFoundException.class, ex.getClass());
+            assertEquals(format("Object not found. Id: %s, type: %s", "123", User.class.getSimpleName()), ex.getMessage());
+        }
     }
 }
