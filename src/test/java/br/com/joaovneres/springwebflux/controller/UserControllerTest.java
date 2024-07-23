@@ -29,6 +29,10 @@ import static org.springframework.http.MediaType.*;
 @AutoConfigureWebTestClient
 class UserControllerTest {
 
+    public static final String NAME = "João V.";
+    public static final String EMAIL = "joao@gmail.com";
+    public static final String PASSWORD = "123456";
+    public static final String ID = "123";
     @Autowired
     private WebTestClient webTestClient;
 
@@ -44,7 +48,7 @@ class UserControllerTest {
     @Test
     @DisplayName("Test endpoint save with success")
     void testSaveWithSuccess() {
-        final var userRequest = new UserRequest("João V.", "joao@gmail.com", "123456");
+        final var userRequest = new UserRequest(NAME, EMAIL, PASSWORD);
 
         when(userService.save(any(UserRequest.class))).thenReturn(just(User.builder().build()));
 
@@ -61,7 +65,7 @@ class UserControllerTest {
     @Test
     @DisplayName("Test endpoint save with bad request")
     void testSaveWithBadRequest() {
-        final var userRequest = new UserRequest(" João V.", "joao@gmail.com", "123456");
+        final var userRequest = new UserRequest(NAME.concat(" "), EMAIL, PASSWORD);
 
         webTestClient.post()
                 .uri("/users")
@@ -82,7 +86,7 @@ class UserControllerTest {
     @DisplayName("Test find by id endpoint with success")
     void testFindByIdWithSuccess() {
 
-        final var userResponse = new UserResponse("123","João V.", "joao@gmail.com");
+        final var userResponse = new UserResponse(ID, NAME, EMAIL);
 
         when(userService.findById(anyString())).thenReturn(just(User.builder().build()));
         when(userMapper.toResponse(any(User.class))).thenReturn(userResponse);
@@ -93,9 +97,9 @@ class UserControllerTest {
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                .jsonPath("$.id").isEqualTo("123")
-                .jsonPath("$.name").isEqualTo("João V.")
-                .jsonPath("$.email").isEqualTo("joao@gmail.com");
+                .jsonPath("$.id").isEqualTo(ID)
+                .jsonPath("$.name").isEqualTo(NAME)
+                .jsonPath("$.email").isEqualTo(EMAIL);
     }
 
     @Test
