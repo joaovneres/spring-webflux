@@ -93,7 +93,7 @@ class UserControllerTest {
         when(userMapper.toResponse(any(User.class))).thenReturn(userResponse);
 
         webTestClient.get()
-                .uri("/users/123")
+                .uri("/users/" + ID)
                 .accept(APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
@@ -101,6 +101,9 @@ class UserControllerTest {
                 .jsonPath("$.id").isEqualTo(ID)
                 .jsonPath("$.name").isEqualTo(NAME)
                 .jsonPath("$.email").isEqualTo(EMAIL);
+
+        verify(userService).findById(anyString());
+        verify(userMapper).toResponse(any(User.class));
     }
 
     @Test
@@ -120,10 +123,34 @@ class UserControllerTest {
                 .jsonPath("$.[0].id").isEqualTo(ID)
                 .jsonPath("$.[0].name").isEqualTo(NAME)
                 .jsonPath("$.[0].email").isEqualTo(EMAIL);
+
+
+        verify(userService).findAll();
+        verify(userMapper).toResponse(any(User.class));
     }
 
     @Test
-    void update() {
+    @DisplayName("Test update endpoint with success")
+    void testUpdateWithSuccess() {
+        final var userRequest = new UserRequest(NAME, EMAIL, PASSWORD);
+        final var userResponse = new UserResponse(ID, NAME, EMAIL);
+
+        when(userService.update(anyString(), any(UserRequest.class))).thenReturn(just(User.builder().build()));
+        when(userMapper.toResponse(any(User.class))).thenReturn(userResponse);
+
+        webTestClient.patch()
+                .uri("/users/" + ID)
+                .contentType(APPLICATION_JSON)
+                .body(fromValue(userRequest))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.id").isEqualTo(ID)
+                .jsonPath("$.name").isEqualTo(NAME)
+                .jsonPath("$.email").isEqualTo(EMAIL);
+
+        verify(userService).update(anyString(), any(UserRequest.class));
+        verify(userMapper).toResponse(any(User.class));
     }
 
     @Test
