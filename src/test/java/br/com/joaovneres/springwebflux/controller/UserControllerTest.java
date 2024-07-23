@@ -34,6 +34,8 @@ class UserControllerTest {
     public static final String EMAIL = "joao@gmail.com";
     public static final String PASSWORD = "123456";
     public static final String ID = "123";
+    public static final String BASE_URI = "users";
+
     @Autowired
     private WebTestClient webTestClient;
 
@@ -54,7 +56,7 @@ class UserControllerTest {
         when(userService.save(any(UserRequest.class))).thenReturn(just(User.builder().build()));
 
         webTestClient.post()
-                .uri("/users")
+                .uri("/" + BASE_URI)
                 .contentType(APPLICATION_JSON)
                 .body(fromValue(userRequest))
                 .exchange()
@@ -69,13 +71,13 @@ class UserControllerTest {
         final var userRequest = new UserRequest(NAME.concat(" "), EMAIL, PASSWORD);
 
         webTestClient.post()
-                .uri("/users")
+                .uri("/" + BASE_URI)
                 .contentType(APPLICATION_JSON)
                 .body(fromValue(userRequest))
                 .exchange()
                 .expectStatus().isBadRequest()
                 .expectBody()
-                .jsonPath("$.path").isEqualTo("/users")
+                .jsonPath("$.path").isEqualTo("/" + BASE_URI)
                 .jsonPath("$.status").isEqualTo(BAD_REQUEST.value())
                 .jsonPath("$.error").isEqualTo("Validation error")
                 .jsonPath("$.message").isEqualTo("Error on validation attributes")
@@ -93,7 +95,7 @@ class UserControllerTest {
         when(userMapper.toResponse(any(User.class))).thenReturn(userResponse);
 
         webTestClient.get()
-                .uri("/users/" + ID)
+                .uri("/" + BASE_URI + "/" + ID)
                 .accept(APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
@@ -115,7 +117,7 @@ class UserControllerTest {
         when(userMapper.toResponse(any(User.class))).thenReturn(userResponse);
 
         webTestClient.get()
-                .uri("/users")
+                .uri("/" + BASE_URI)
                 .accept(APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
@@ -139,7 +141,7 @@ class UserControllerTest {
         when(userMapper.toResponse(any(User.class))).thenReturn(userResponse);
 
         webTestClient.patch()
-                .uri("/users/" + ID)
+                .uri("/" + BASE_URI + "/" + ID)
                 .contentType(APPLICATION_JSON)
                 .body(fromValue(userRequest))
                 .exchange()
@@ -160,7 +162,7 @@ class UserControllerTest {
         when(userService.delete(ID)).thenReturn(just(User.builder().build()));
 
         webTestClient.delete()
-                .uri("/users/" + ID)
+                .uri("/" + BASE_URI + "/" + ID)
                 .exchange()
                 .expectStatus().isOk();
 
