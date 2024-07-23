@@ -3,6 +3,7 @@ package br.com.joaovneres.springwebflux.controller;
 import br.com.joaovneres.springwebflux.entity.User;
 import br.com.joaovneres.springwebflux.mapper.UserMapper;
 import br.com.joaovneres.springwebflux.model.request.UserRequest;
+import br.com.joaovneres.springwebflux.model.response.UserResponse;
 import br.com.joaovneres.springwebflux.service.impl.UserServiceImpl;
 import com.mongodb.reactivestreams.client.MongoClient;
 import org.junit.jupiter.api.DisplayName;
@@ -78,7 +79,23 @@ class UserControllerTest {
     }
 
     @Test
-    void findById() {
+    @DisplayName("Test find by id endpoint with success")
+    void testFindByIdWithSuccess() {
+
+        final var userResponse = new UserResponse("123","João V.", "joao@gmail.com");
+
+        when(userService.findById(anyString())).thenReturn(just(User.builder().build()));
+        when(userMapper.toResponse(any(User.class))).thenReturn(userResponse);
+
+        webTestClient.get()
+                .uri("/users/123")
+                .accept(APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.id").isEqualTo("123")
+                .jsonPath("$.name").isEqualTo("João V.")
+                .jsonPath("$.email").isEqualTo("joao@gmail.com");
     }
 
     @Test
